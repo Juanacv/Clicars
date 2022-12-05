@@ -1,0 +1,4 @@
+src/SubTest
+composer.lock
+.phpunit.result.cache
+vendor

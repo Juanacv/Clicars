@@ -1,0 +1,25 @@
+{
+    "name": "clicars/interview",
+    "description": "Clicars interviews - Mafia coding test",
+    "license": "proprietary",
+    "type": "project",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Clicars\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Clicars\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.0",
+        "phpunit/phpunit": "~9.0"
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}
