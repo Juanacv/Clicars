@@ -190,9 +190,7 @@ class Mafia implements IMafia
         $oldestSubordinate = $this->getOldestMember($member->getSubordinates(), $member);
         if ($oldestSubordinate) {
              //member going to jail is GodFather
-            if ($isGodFather) {
-                $this->godfather = $oldestSubordinate;
-            }
+            if ($isGodFather) $this->godfather = $oldestSubordinate;
             // Promote the oldest direct subordinate to be the boss of the others
             $oldestSubordinate->setBoss($boss);
             $this->moveSubordinates($member->getSubordinates(), $oldestSubordinate);     
