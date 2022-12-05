@@ -208,8 +208,11 @@ class Mafia implements IMafia
             $newBoss = $subordinate->getBoss();
             $newBoss->removeSubordinate($subordinate);
             $subordinate->setBoss($member); 
+            //Get subordinates froms subordinate, if has been promoted
             $subordinateSubordinates = $subordinate->getSubordinates();
+            //Check if has subordinates in common
             $commonSubordinates = $this->returnSubordinatesInCommon($oldSubordinates, $subordinateSubordinates);
+            //Remove subordinates in common
             foreach($commonSubordinates as $commonSubordinate) {
                 $subordinate->removeSubordinate($commonSubordinate);
             }
