@@ -70,7 +70,7 @@ class Mafia implements IMafia
             return false; //is not in prison
         }
         
-        return $this->recoverSubordinate($member);
+        return $this->recoverSubordinates($member);
     }
 	
 	public function findBigBosses(int $minimumSubordinates): array
@@ -130,6 +130,7 @@ class Mafia implements IMafia
                 $common[$subordinate1->getId()] = $subordinate1;
             }
         }
+
         return $common;
     }
 
@@ -153,6 +154,7 @@ class Mafia implements IMafia
                 $oldestAge = $subordinate->getAge();
             }
         } 
+
         return $oldestBoss;
     }
 
@@ -201,7 +203,7 @@ class Mafia implements IMafia
         }           
     }
 
-    private function recoverSubordinate(IMember $member): bool
+    private function recoverSubordinates(IMember $member): bool
     {
         $oldSubordinates = $member->getSubordinates();
         foreach ($oldSubordinates as $subordinate) {
