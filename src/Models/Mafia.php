@@ -37,6 +37,7 @@ class Mafia implements IMafia
         if (isset($this->members[$id])) {
             return $this->members[$id];
         }
+        
         return null;
     }
 
@@ -49,64 +50,11 @@ class Mafia implements IMafia
             unset($this->members[$member->getId()]);
         }  
         else {
-            return false; //is not a member
+            return false; //Is not a member
         }
 
-        // Find the oldest remaining boss at the same level as the imprisoned member's boss
-        $oldestBoss = null;
-        $oldestAge = 0;
-        
-        $isGodFather = false;
-        if ($boss) {
-            foreach ($boss->getSubordinates() as $subordinate) {
-                if ($subordinate->getAge() > $oldestAge && $subordinate->getId() !== $member->getId() && $this->isMember($subordinate)) {
-                    $oldestBoss = $subordinate;
-                    $oldestAge = $subordinate->getAge();
-                }
-            }        
-        }
-        else { //if not have boss, is the godfather
-            $isGodFather = true;
-        }
-        if (!$oldestBoss) {
-            // If there is no oldest boss at the same level, promote the oldest direct subordinate of the imprisoned member
-            $oldestSubordinate = null;
-            $oldestAge = 0;
-            $subordinates = $member->getSubordinates();
-            foreach ($subordinates as $subordinate) {
-                if ($subordinate->getAge() > $oldestAge) {
-                    $oldestSubordinate = $subordinate;
-                    $oldestAge = $subordinate->getAge();
-                }
-            }
-            if ($oldestSubordinate) {
-                if ($isGodFather) { //member going to jail is GodFather
-                    $this->godfather = $oldestSubordinate;
-                }
-                // Promote the oldest direct subordinate to be the boss of the others
-                $oldestSubordinate->setBoss($boss);
-                $subordinates = $member->getSubordinates();
-                foreach ($subordinates as $subordinate) {
-                    // Relocate the direct subordinates of the imprisoned member to work for the new boss
-                    //avoid an oldest subordinate being its own subordinate
-                    if ($subordinate->getId() !== $oldestSubordinate->getId()) {
-                        $subordinate->setBoss($oldestSubordinate);
-                    }
-                }            
-            }  
-            else {
-                return false;
-            }           
-        }
-        else {
-            // Relocate the direct subordinates of the imprisoned member to work for the oldest remaining boss
-            $subordinates = $member->getSubordinates();
-            foreach ($subordinates as $subordinate) {
-                $subordinate->setBoss($oldestBoss);                
-            }            
-        }   
-                
-        return true;   
+        // Find the new boss for subordinates        
+        return $this->findNewBoss($member, $boss);        
     }
     
 
@@ -121,19 +69,8 @@ class Mafia implements IMafia
         else  {
             return false; //is not in prison
         }
-        $oldSubordinates = $member->getSubordinates();
-        foreach ($oldSubordinates as $subordinate) {
-            $newBoss = $subordinate->getBoss();
-            $newBoss->removeSubordinate($subordinate);
-            $subordinate->setBoss($member); 
-            $subordinateSubordinates = $subordinate->getSubordinates();
-            $commonSubordinates = $this->returnSubordinatesInCommon($oldSubordinates, $subordinateSubordinates);
-            foreach($commonSubordinates as $commonSubordinate) {
-                $subordinate->removeSubordinate($commonSubordinate);
-            }
-        }
-      
-        return true;        
+        
+        return $this->recoverSubordinate($member);
     }
 	
 	public function findBigBosses(int $minimumSubordinates): array
@@ -204,5 +141,80 @@ class Mafia implements IMafia
         }
         
         return $count;
-    }    
+    }
+    
+    private function getOldestMember(array $members,IMember $member):?IMember
+    {
+        $oldestBoss = null;
+        $oldestAge = 0;        
+        foreach ($members as $subordinate) {
+            if ($subordinate->getAge() > $oldestAge && $subordinate->getId() !== $member->getId() && $this->isMember($subordinate)) {
+                $oldestBoss = $subordinate;
+                $oldestAge = $subordinate->getAge();
+            }
+        } 
+        return $oldestBoss;
+    }
+
+    private function moveSubordinates(array $subordinates, IMember $newBoss):void
+    {
+        foreach ($subordinates as $subordinate) {
+            //Relocate the direct subordinates of the imprisoned member to work for the new boss
+            //Avoid an oldest subordinate being its own subordinate
+            if ($subordinate->getId() !== $newBoss->getId()) {
+                $subordinate->setBoss($newBoss);
+            }
+        }   
+    }
+
+    private function findNewBoss($member, $boss): bool
+    {      
+        $isGodFather = false;
+        $oldestBoss = null;
+        if ($boss) {
+            $oldestBoss = $this->getOldestMember($boss->getSubordinates(), $member);
+        }
+        else { //If not have boss, is the godfather
+            $isGodFather = true;
+        }
+
+        if (!$oldestBoss) {
+            // If there is no oldest boss at the same level, promote the oldest direct subordinate of the imprisoned member     
+            $oldestSubordinate = $this->getOldestMember($member->getSubordinates(), $member);
+            if ($oldestSubordinate) {
+                if ($isGodFather) { //member going to jail is GodFather
+                    $this->godfather = $oldestSubordinate;
+                }
+                // Promote the oldest direct subordinate to be the boss of the others
+                $oldestSubordinate->setBoss($boss);
+                $this->moveSubordinates($member->getSubordinates(), $oldestSubordinate);          
+            }  
+            else {
+                return false;
+            }           
+        }
+        else {
+            // Relocate the direct subordinates of the imprisoned member to work for the oldest remaining boss
+            $this->moveSubordinates($member->getSubordinates(), $oldestBoss);           
+        }   
+                
+        return true;   
+    }
+
+    private function recoverSubordinate(IMember $member): bool
+    {
+        $oldSubordinates = $member->getSubordinates();
+        foreach ($oldSubordinates as $subordinate) {
+            $newBoss = $subordinate->getBoss();
+            $newBoss->removeSubordinate($subordinate);
+            $subordinate->setBoss($member); 
+            $subordinateSubordinates = $subordinate->getSubordinates();
+            $commonSubordinates = $this->returnSubordinatesInCommon($oldSubordinates, $subordinateSubordinates);
+            foreach($commonSubordinates as $commonSubordinate) {
+                $subordinate->removeSubordinate($commonSubordinate);
+            }
+        }
+      
+        return true;  
+    }
 }
