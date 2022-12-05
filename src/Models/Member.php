@@ -30,7 +30,7 @@ class Member implements IMember
     public function addSubordinate(IMember $subordinate): IMember
     {
         
-        if (!isset($this->subordinates[$subordinate->getId()])) {
+        if (($key = array_search($subordinate, $this->subordinates)) === false) {
             $this->subordinates[$subordinate->getId()] = $subordinate;            
         }
         return $this;
