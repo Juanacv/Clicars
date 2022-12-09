@@ -67,7 +67,7 @@ class Mafia implements IMafia
             unset($this->prison[$member->getId()]);
         }
         else  {
-            return false; //is not in prison
+            return false; //Is not in prison
         }
         
         return $this->recoverSubordinates($member);
