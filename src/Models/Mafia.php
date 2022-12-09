@@ -73,50 +73,50 @@ class Mafia implements IMafia
         return $this->recoverSubordinates($member);
     }
 	
-	public function findBigBosses(int $minimumSubordinates): array
-	{
-		$bigBosses = [];
+    public function findBigBosses(int $minimumSubordinates): array
+    {
+        $bigBosses = [];
         $subordinatesCount = 0;
-		foreach ($this->members as $member) {
+	foreach ($this->members as $member) {
             $subordinatesCount = count($member->getSubordinates()) + $this->countMembers($member->getSubordinates());
             if ($subordinatesCount > $minimumSubordinates) {
                 $bigBosses[] = $member;
             }
-		}
-
-		return $bigBosses;
 	}
 
-	public function compareMembers(IMember $memberA, IMember $memberB): ?IMember
-	{
-		if ($memberA->getBoss() === $memberB->getBoss()) {
-			return null;
-		}
+	return $bigBosses;
+    }
 
-		$a = $memberA;
+    public function compareMembers(IMember $memberA, IMember $memberB): ?IMember
+    {
+        if ($memberA->getBoss() === $memberB->getBoss()) {
+	    return null;
+	}
+
+	$a = $memberA;
         $levelA = 0;
-		while ($a->getBoss() !== null) {
-			$a = $a->getBoss();
+	while ($a->getBoss() !== null) {
+	    $a = $a->getBoss();
             $levelA++;
-		}
+	}
 
-		$b = $memberB;
+	$b = $memberB;
         $levelB = 0;
-		while ($b->getBoss() !== null) {
-			$b = $b->getBoss();
+	while ($b->getBoss() !== null) {
+	    $b = $b->getBoss();
             $levelB++;
-		}
+	}
         //Lower count of bosses is the higher level
-		if ($levelA === $levelB) {
-			return null;
-		}
+	if ($levelA === $levelB) {
+	    return null;
+	}
         else if ($levelA > $levelB) {
             return $memberB;
         }
         else {
             return $memberA;
         }
-	}
+    }
 
     private function isMember(IMember $member): bool
     {
