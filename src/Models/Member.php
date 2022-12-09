@@ -28,8 +28,7 @@ class Member implements IMember
     }
 
     public function addSubordinate(IMember $subordinate): IMember
-    {
-        
+    {        
         if (array_search($subordinate, $this->subordinates) === false) {
             $this->subordinates[$subordinate->getId()] = $subordinate;            
         }
