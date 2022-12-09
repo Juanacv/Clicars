@@ -123,7 +123,8 @@ class Mafia implements IMafia
         return isset($this->members[$member->getId()]);
     }
 
-    private function returnSubordinatesInCommon(array $subordinates1, array $subordinates2) {
+    private function returnSubordinatesInCommon(array $subordinates1, array $subordinates2): array
+    {
         $common = [];
         foreach($subordinates1 as $subordinate1) {
             if (isset($subordinates2[$subordinate1->getId()])) {
