@@ -147,16 +147,16 @@ class Mafia implements IMafia
     
     private function getOldestMember(array $members, IMember $member): ?IMember
     {
-        $oldestBoss = null;
+        $oldestMember = null;
         $oldestAge = 0;        
         foreach ($members as $subordinate) {
             if ($subordinate->getAge() > $oldestAge && $subordinate->getId() !== $member->getId() && $this->isMember($subordinate)) {
-                $oldestBoss = $subordinate;
+                $oldestMember = $subordinate;
                 $oldestAge = $subordinate->getAge();
             }
         } 
 
-        return $oldestBoss;
+        return $oldestMember;
     }
 
     private function moveSubordinates(array $subordinates, IMember $newBoss): void
