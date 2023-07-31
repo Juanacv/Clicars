@@ -197,20 +197,20 @@ class Mafia implements IMafia
         }           
     }
 
-    private function recoverSubordinates(IMember $member): bool
+    private function recoverSubordinates(IMember $memberOutOfJail): bool
     {
-        $oldSubordinates = $member->getSubordinates();
-        foreach ($oldSubordinates as $subordinate) {
-            $newBoss = $subordinate->getBoss();
-            $newBoss->removeSubordinate($subordinate);
-            $subordinate->setBoss($member); 
+        $formerSubordinates = $memberOutOfJail->getSubordinates();
+        foreach ($formerSubordinates as $formerSubordinate) {
+            $currentBoss = $formerSubordinate->getBoss();
+            $currentBoss->removeSubordinate($formerSubordinate);
+            $formerSubordinate->setBoss($memberOutOfJail); 
             //Get subordinates from subordinate, if has been promoted
-            $subordinateSubordinates = $subordinate->getSubordinates();
+            $subordinateSubordinates = $formerSubordinate->getSubordinates();
             //Check if has subordinates in common
-            $commonSubordinates = $this->returnSubordinatesInCommon($oldSubordinates, $subordinateSubordinates);
+            $commonSubordinates = $this->returnSubordinatesInCommon($formerSubordinates, $subordinateSubordinates);
             //Remove subordinates in common
             foreach($commonSubordinates as $commonSubordinate) {
-                $subordinate->removeSubordinate($commonSubordinate);
+                $formerSubordinate->removeSubordinate($commonSubordinate);
             }
         }
       
