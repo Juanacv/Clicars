@@ -125,13 +125,8 @@ class Mafia implements IMafia
 
     private function returnSubordinatesInCommon(array $subordinates1, array $subordinates2): array
     {
-        $common = [];
-        foreach($subordinates1 as $subordinate1) {
-            if (isset($subordinates2[$subordinate1->getId()])) {
-                $common[$subordinate1->getId()] = $subordinate1;
-            }
-        }
-
+        // Find subordinates in common using array_intersect_key()
+        $common = array_intersect_key($subordinates1, $subordinates2);
         return $common;
     }
 
