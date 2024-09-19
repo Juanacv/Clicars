@@ -29,7 +29,7 @@ class Member implements IMember
 
     public function addSubordinate(IMember $subordinate): IMember
     {        
-        if (array_search($subordinate, $this->subordinates) === false) {
+        if (!isset($this->subordinates[$subordinate->getId()])) {
             $this->subordinates[$subordinate->getId()] = $subordinate;            
         }
         return $this;
@@ -37,8 +37,8 @@ class Member implements IMember
 
     public function removeSubordinate(IMember $subordinate): ?IMember
     {
-        if (($key = array_search($subordinate, $this->subordinates)) !== false) {
-            unset($this->subordinates[$key]);
+        if (isset($this->subordinates[$subordinate->getId()])) {
+            unset($this->subordinates[$subordinate->getId()]);
             return $subordinate;
         }
         return null;
