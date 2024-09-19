@@ -204,16 +204,23 @@ class Mafia implements IMafia
             $currentBoss = $formerSubordinate->getBoss();
             $currentBoss->removeSubordinate($formerSubordinate);
             $formerSubordinate->setBoss($memberOutOfJail); 
-            //Get subordinates from subordinate, if has been promoted
-            $subordinateSubordinates = $formerSubordinate->getSubordinates();
-            //Check if has subordinates in common
-            $commonSubordinates = $this->returnSubordinatesInCommon($formerSubordinates, $subordinateSubordinates);
-            //Remove subordinates in common
-            foreach($commonSubordinates as $commonSubordinate) {
-                $formerSubordinate->removeSubordinate($commonSubordinate);
-            }
+            //if it is a promoted subordinate, lets see if has subordinates in common
+            $this->getSubordinatesInCommon($formerSubordinate, $formerSubordinates);
         }
       
         return true;  
+    }
+
+    private function getSubordinatesInCommon($formerSubordinate, $formerSubordinates) {
+        //Get subordinates from subordinate, if has been promoted
+        $subordinatesFromSubordinate = $formerSubordinate->getSubordinates();        
+        //Check if has subordinates in common
+        $commonSubordinates = $this->returnSubordinatesInCommon($formerSubordinates, $subordinatesFromSubordinate);
+        //Remove subordinates in common
+        foreach($commonSubordinates as $commonSubordinate) {
+            $formerSubordinate->removeSubordinate($commonSubordinate);
+        }
+        
+        return true;
     }
 }
